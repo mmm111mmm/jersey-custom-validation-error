@@ -1,0 +1,59 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
+
+plugins {
+  id "com.jfrog.bintray" version "1.7"
+}
+
+apply plugin: 'scala'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+archivesBaseName = 'jersey-custom-validation-error'
+group = 'com.newfivefour'
+version = '0.0.2'
+description 'Throw a custom validation error from Jersey with bean validation enabled'
+
+sourceSets.main.scala.srcDirs = ['.']
+
+publishing {
+  publications {
+    MyPublication(MavenPublication) {
+      from components.java
+      groupId = project.group
+      artifactId = project.archivesBaseName
+      version = project.version
+    }
+  }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['MyPublication']
+    publish = true
+    pkg {
+        repo = 'newfivefour'
+        name = project.archivesBaseName
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/newfivefour/jersey-custom-validation-error.git'
+        version {
+            name = project.version
+            desc = project.description
+            released  = new Date()
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  compile 'org.scala-lang:scala-library:2.11.6'
+  compile 'org.glassfish.jersey.bundles:jaxrs-ri:2.23.1'
+  compile 'org.glassfish.jersey.ext:jersey-bean-validation:2.23.2'
+}
